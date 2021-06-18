@@ -1,9 +1,14 @@
 import { createServer } from "http";
-import { createReadStream, readFile, writeFile } from "fs";
+import { readFile, writeFile } from "fs";
 let port = 8080;
 let host = "localhost";
 
 const server = createServer((request, response) => {
+  response.setHeader("Access-Control-Allow-Origin", "*");
+  response.setHeader(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
   // GET DATA FROM AJAX
   if (request.url === "/get-data" && request.method === "GET") {
     response.setHeader("content-type", "application/json");
@@ -24,7 +29,7 @@ const server = createServer((request, response) => {
     let data = [];
 
     request
-      .on("data", chunk => {
+      .on("data", (chunk) => {
         data.push(chunk);
       })
       .on("end", () => {
@@ -34,12 +39,10 @@ const server = createServer((request, response) => {
         response.end();
       });
   } else {
-    response.statusMessage = "bad method";
-    response.write('{"message": "error"}');
     response.end();
   }
 });
-server.listen(port, host, error => {
+server.listen(port, host, (error) => {
   if (error) {
     console.log("Something went wrong", error);
   } else {
