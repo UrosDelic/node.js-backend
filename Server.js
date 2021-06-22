@@ -3,7 +3,10 @@ import { readFile, writeFile } from "fs";
 let port = 8080;
 let host = "localhost";
 
+////   N  O  D  E .  J  S            S  E  R  V  E  R    ////////
+
 const server = createServer((request, response) => {
+
   response.setHeader("Access-Control-Allow-Origin", "*");
   response.setHeader(
     "Access-Control-Allow-Headers",
