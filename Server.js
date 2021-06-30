@@ -6,7 +6,6 @@ let host = "localhost";
 ////   N  O  D  E .  J  S            S  E  R  V  E  R    ////////
 
 const server = createServer((request, response) => {
-
   response.setHeader("Access-Control-Allow-Origin", "*");
   response.setHeader(
     "Access-Control-Allow-Headers",
@@ -15,7 +14,7 @@ const server = createServer((request, response) => {
   // GET DATA FROM AJAX
   if (request.url === "/get-data" && request.method === "GET") {
     response.setHeader("content-type", "application/json");
-    let message = readFile("message.json", (error, file) => {
+    let message = readFile("logindata.json", (error, file) => {
       if (error) {
         throw error;
       } else {
@@ -25,8 +24,23 @@ const server = createServer((request, response) => {
       }
     });
   }
-  // POST DATA FROM AJAX
+  // POST PLAYGROUND DATA
   else if (request.method === "POST" && request.url === "/post-data") {
+    response.setHeader("content-type", "application/json");
+    let data = [];
+    request
+      .on("data", (chunk) => {
+        data.push(chunk);
+      })
+      .on("end", () => {
+        data = Buffer.concat(data);
+        writeFile("playgrounddata.json", data, { flag: "a" }, () => {});
+        response.write(data);
+        response.end();
+      });
+  }
+  // POST LOG IN DATA FROM AJAX
+  else if (request.method === "POST" && request.url === "/post-login-data") {
     response.setHeader("content-type", "application/json");
 
     let data = [];
@@ -37,7 +51,7 @@ const server = createServer((request, response) => {
       })
       .on("end", () => {
         data = Buffer.concat(data);
-        writeFile("message.json", data, () => {});
+        writeFile("logindata.json", data, () => {});
         response.write(data);
         response.end();
       });
