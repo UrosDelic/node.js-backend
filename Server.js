@@ -6,6 +6,20 @@ let host = "localhost";
 ////   N  O  D  E .  J  S            S  E  R  V  E  R    ////////
 
 const server = createServer((request, response) => {
+  // function for writing data
+  function writeData(data, file, flag) {
+    request
+      .on("data", (chunk) => {
+        data.push(chunk);
+      })
+      .on("end", () => {
+        data = Buffer.concat(data);
+        writeFile(file, data, flag, () => {});
+        response.write(data);
+        response.end();
+      });
+  }
+
   response.setHeader("Access-Control-Allow-Origin", "*");
   response.setHeader(
     "Access-Control-Allow-Headers",
@@ -28,33 +42,13 @@ const server = createServer((request, response) => {
   else if (request.method === "POST" && request.url === "/post-data") {
     response.setHeader("content-type", "application/json");
     let data = [];
-    request
-      .on("data", (chunk) => {
-        data.push(chunk);
-      })
-      .on("end", () => {
-        data = Buffer.concat(data);
-        writeFile("playgrounddata.json", data, { flag: "a" }, () => {});
-        response.write(data);
-        response.end();
-      });
+    writeData(data, "playgrounddata.json", { flag: "a" });
   }
   // POST LOG IN DATA FROM AJAX
   else if (request.method === "POST" && request.url === "/post-login-data") {
     response.setHeader("content-type", "application/json");
-
     let data = [];
-
-    request
-      .on("data", (chunk) => {
-        data.push(chunk);
-      })
-      .on("end", () => {
-        data = Buffer.concat(data);
-        writeFile("logindata.json", data, () => {});
-        response.write(data);
-        response.end();
-      });
+    writeData(data, "logindata.json");
   } else {
     response.end();
   }
