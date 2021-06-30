@@ -7,15 +7,15 @@ let host = "localhost";
 
 const server = createServer((request, response) => {
   // function for writing data
-  function writeData(data, file, flag) {
+  function writeData(body, file, flag) {
     request
       .on("data", (chunk) => {
-        data.push(chunk);
+        let obj = JSON.parse(chunk);
+        body.push(obj);
       })
       .on("end", () => {
-        data = Buffer.concat(data);
-        writeFile(file, data, flag, () => {});
-        response.write(data);
+        writeFile(file, JSON.stringify(body), flag, () => { });
+        response.write(Buffer.from(body));
         response.end();
       });
   }
@@ -28,11 +28,10 @@ const server = createServer((request, response) => {
   // GET DATA FROM AJAX
   if (request.url === "/get-data" && request.method === "GET") {
     response.setHeader("content-type", "application/json");
-    let message = readFile("logindata.json", (error, file) => {
+    readFile("logindata.json", (error, file) => {
       if (error) {
         throw error;
       } else {
-        message = Buffer.from(file);
         response.write(file);
         response.end();
       }
@@ -41,8 +40,18 @@ const server = createServer((request, response) => {
   // POST PLAYGROUND DATA
   else if (request.method === "POST" && request.url === "/post-data") {
     response.setHeader("content-type", "application/json");
-    let data = [];
-    writeData(data, "playgrounddata.json", { flag: "a" });
+
+    readFile("playgrounddata.json", (error, file) => {
+      if (error) {
+        throw error;
+      } else {
+        let data = [];
+        if (file.length > 0) {
+          data = JSON.parse(file);
+        }
+        writeData(data, "playgrounddata.json", { flag: "w+" });
+      }
+    })
   }
   // POST LOG IN DATA FROM AJAX
   else if (request.method === "POST" && request.url === "/post-login-data") {
