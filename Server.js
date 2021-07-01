@@ -28,7 +28,7 @@ const server = createServer((request, response) => {
   // GET DATA FROM AJAX
   if (request.url === "/get-data" && request.method === "GET") {
     response.setHeader("content-type", "application/json");
-    readFile("logindata.json", (error, file) => {
+    readFile("login.json", (error, file) => {
       if (error) {
         throw error;
       } else {
@@ -38,10 +38,10 @@ const server = createServer((request, response) => {
     });
   }
   // POST SIGNUP DATA
-  else if (request.method === "POST" && request.url === "/post-signup-data") {
+  else if (request.method === "POST" && request.url === "/signup") {
     response.setHeader("content-type", "application/json");
 
-    readFile("playgrounddata.json", (error, file) => {
+    readFile("signup.json", (error, file) => {
       if (error) {
         throw error;
       } else {
@@ -49,12 +49,12 @@ const server = createServer((request, response) => {
         if (file.length > 0) {
           data = JSON.parse(file);
         }
-        writeData(data, "playgrounddata.json", { flag: "w+" });
+        writeData(data, "signup.json", { flag: "w+" });
       }
     });
   }
   // POST LOG IN DATA FROM AJAX
-  else if (request.method === "POST" && request.url === "/post-login-data") {
+  else if (request.method === "POST" && request.url === "/login") {
     response.setHeader("content-type", "application/json");
     let data = [];
     request
@@ -63,7 +63,7 @@ const server = createServer((request, response) => {
       })
       .on("end", () => {
         data = Buffer.concat(data);
-        writeFile("logindata.json", data, () => {});
+        writeFile("login.json", data, () => {});
         response.write(data);
         response.end();
       });
