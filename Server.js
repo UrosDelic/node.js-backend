@@ -14,7 +14,7 @@ const server = createServer((request, response) => {
         body.push(obj);
       })
       .on("end", () => {
-        writeFile(file, JSON.stringify(body), flag, () => { });
+        writeFile(file, JSON.stringify(body), flag, () => {});
         response.write(Buffer.from(body));
         response.end();
       });
@@ -37,7 +37,7 @@ const server = createServer((request, response) => {
       }
     });
   }
-  // POST PLAYGROUND DATA
+  // POST SIGNUP DATA
   else if (request.method === "POST" && request.url === "/post-data") {
     response.setHeader("content-type", "application/json");
 
@@ -51,13 +51,22 @@ const server = createServer((request, response) => {
         }
         writeData(data, "playgrounddata.json", { flag: "w+" });
       }
-    })
+    });
   }
   // POST LOG IN DATA FROM AJAX
   else if (request.method === "POST" && request.url === "/post-login-data") {
     response.setHeader("content-type", "application/json");
     let data = [];
-    writeData(data, "logindata.json");
+    request
+      .on("data", (chunk) => {
+        data.push(chunk);
+      })
+      .on("end", () => {
+        data = Buffer.concat(data);
+        writeFile("logindata.json", data, () => {});
+        response.write(data);
+        response.end();
+      });
   } else {
     response.end();
   }
