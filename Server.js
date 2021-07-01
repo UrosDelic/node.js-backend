@@ -38,7 +38,7 @@ const server = createServer((request, response) => {
     });
   }
   // POST SIGNUP DATA
-  else if (request.method === "POST" && request.url === "/post-data") {
+  else if (request.method === "POST" && request.url === "/post-signup-data") {
     response.setHeader("content-type", "application/json");
 
     readFile("playgrounddata.json", (error, file) => {
